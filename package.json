@@ -4,7 +4,19 @@
   "description": "development tools for wlc-net application",
   "main": "./src/index.js",
   "author": "Shane Jennings",
+  "dependencies": {
+    "module-alias": "^2.2.2"
+  },
   "devDependencies": {
+    "@types/node": "^18.16.1",
+    "copyfiles": "^2.4.1",
     "typescript": "^5.0.4"
+  },
+  "_moduleAliases": {
+    "manifest": "./dist/manifest"
+  },
+  "scripts": {
+    "build": "tsc && copyfiles -u 1 src/template/**/* dist/",
+    "insert-api-snippets": "npm run build && node dist/insert-api-snippets.js"
   }
 }

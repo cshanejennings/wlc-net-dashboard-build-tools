@@ -1,0 +1,17 @@
+{
+  "variables": {
+    "LOGIN_STATUS": "logged_out",
+    "HTTP_METHOD": "post",
+    "CONTROLLER_CLASS": "UserPasswordController",
+    "API_PATH": "user/password/forgot",
+    "API_DESCRIPTION": "Creates a password reset token and sends it to the user via email",
+    "RESPONSE_TYPE": "ConfirmationResponse",
+    "REQUEST_TYPE": "SubmitEmail"
+  },
+  "files": [{
+      "path": "../../client/src/service/server.laravel-api.ts",
+      "token": "// END USER API METHODS",
+      "template": "template/insert-api/template--insert-api--server.laravel-api.txt"
+    }
+  ]
+}

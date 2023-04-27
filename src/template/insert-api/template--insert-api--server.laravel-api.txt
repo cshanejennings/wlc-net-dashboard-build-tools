@@ -1,0 +1,27 @@
+
+/**
+ * ${API_DESCRIPTION}
+ * ${HTTP_METHOD} route: api/${API_PATH}
+ * @see App\Http\Controllers\${CONTROLLER_CLASS}::${CONTROLLER_METHOD}
+ * @param request ServerRequest ${REQUEST_TYPE_AS_JSDOC}
+ * @returns Promise<AxiosResponse<${RESPONSE_TYPE}>>
+ */
+export const ${CONTROLLER_METHOD} = (
+  request: ServerRequest ${REQUEST_TYPE_AS_TS}
+): Promise<AxiosResponse<${RESPONSE_TYPE}>> => ${LOGIN_STATUS}.${HTTP_METHOD}(
+  get_api_url('${API_PATH}'), request
+);
+
+--example--
+/**
+ * Creates a password reset token and sends it to the user via email
+ * POST route: api/user/password/forgot
+ * @see App\Http\Controllers\UserPasswordController::api_user_password_forgot_post
+ * @param request ServerRequest with SubmitEmail
+ * @returns Promise<AxiosResponse<ConfirmationResponse>>
+ */
+export const api_user_password_forgot_post = (
+  request: ServerRequest & { data: SubmitEmail }
+): Promise<AxiosResponse<ConfirmationResponse>> => logged_out.post(
+  get_api_url('user/forgot-password'), request
+);
