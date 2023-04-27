@@ -1,0 +1,10 @@
+{
+  "name": "wlc-net-dashboard-build-tools",
+  "version": "1.0.0",
+  "description": "development tools for wlc-net application",
+  "main": "./src/index.js",
+  "author": "Shane Jennings",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
