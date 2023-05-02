@@ -22,7 +22,7 @@ async function crawl_directory(directory) {
       const imports = Array.from(raw_import_urls, ([, namedImports, defaultImport, fromUrl]) => ({
         imports: (namedImports || defaultImport).split(/,\s*/), 
         from: fromUrl
-      }));
+      })).flatMap(obj => obj.imports);
       const asset_path = file_path.replace(/\\/g, '/').replace(/.*client\//, '');
       result[asset_path] = imports;
     }
