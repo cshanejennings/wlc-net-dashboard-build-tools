@@ -3,8 +3,8 @@ const path = require('path');
 
 const root_path = (path.join(__dirname, '../../../client'));
 const src_path = path.join(root_path, 'src');
-
-const IMPORT_REGEX = /import\s+(?:{[^}]+}|[^'";\n]+)\s+from\s+['"]([^'"]+)['"]/g;
+const OMPORT_REGEX = /import\s+(?:{[^}]+}|[^'";\n]+)\s+from\s+['"]([^'"]+)['"]/g;
+const IMPORT_REGEX = /import\s+(?:{([^}]+)}|([^'";\n]+))\s+from\s+['"]([^'"]+)['"]/g;
 const VALID_FILE = /\.(jsx|js|tsx|ts)$/;
 
 async function crawl_directory(directory) {
@@ -18,9 +18,13 @@ async function crawl_directory(directory) {
       Object.assign(result, subdirResult);
     } else if (file.isFile() && VALID_FILE.test(file.name)) {
       const file_content = await fs.promises.readFile(file_path, 'utf8');
-      const raw_import_urls = file_content.match(IMPORT_REGEX);
+      const raw_import_urls = file_content.matchAll(IMPORT_REGEX);
+      const imports = Array.from(raw_import_urls, ([, namedImports, defaultImport, fromUrl]) => ({
+        imports: (namedImports || defaultImport).split(/,\s*/), 
+        from: fromUrl
+      }));
       const asset_path = file_path.replace(/\\/g, '/').replace(/.*client\//, '');
-      result[asset_path] = raw_import_urls;
+      result[asset_path] = imports;
     }
   }
   const json = JSON.stringify(result, null, 2);
@@ -30,6 +34,3 @@ async function crawl_directory(directory) {
 }
 
 crawl_directory(path.join(src_path));
-
-
-
