@@ -1,5 +1,5 @@
 # dependencies
-
+/json_reports/*
 /node_modules
 /dist/*
 map.json
