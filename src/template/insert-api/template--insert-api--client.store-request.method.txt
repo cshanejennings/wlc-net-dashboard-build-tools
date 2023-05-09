@@ -1,0 +1,37 @@
+  
+  export const request_${CONTROLLER_METHOD} = () =>
+(dispatch: Dispatch): Promise<void | ${STORE_NAME}Action> => {
+  const request = { query: null, entity: '${STORE_ENTITY}' };
+  dispatch({ type: ${EVENT_NAMESPACE}.REQUEST_LOADING, payload: {
+    // INSERT REQUEST PAYLOAD HERE
+   } });
+  
+  return ${CONTROLLER_METHOD}({ dispatch })
+  .then(({data}) => dispatch({
+    type: ${EVENT_NAMESPACE}.REQUEST_LOADED,
+    payload: { request: { ...request, results: {
+      // INSERT RESULT PAYLOAD HERE
+    } } }
+  }))
+  .catch((e: ResponseError) => dispatch({
+    type: ${EVENT_NAMESPACE}.REQUEST_FAILED,
+    payload: { request: {  ...request, query_error: e } }
+  }))
+}
+  
+  --example--
+  export const request_integrations_qbo_company_info_get = () =>
+(dispatch: Dispatch): Promise<void | QuickBooksAction> => {
+  const request = { query: null, entity: 'company_info' };
+  dispatch({ type: QUICKBOOKS_EVENT.REQUEST_LOADING, payload: { request } });
+  
+  return api_integrations_qbo_company_info_get({ dispatch })
+  .then(({data}) => dispatch({
+    type: QUICKBOOKS_EVENT.REQUEST_LOADED,
+    payload: { request: { ...request, results: {company_info: data} } }
+  }))
+  .catch((e: ResponseError) => dispatch({
+    type: QUICKBOOKS_EVENT.REQUEST_FAILED,
+    payload: { request: {  ...request, query_error: e } }
+  }))
+}

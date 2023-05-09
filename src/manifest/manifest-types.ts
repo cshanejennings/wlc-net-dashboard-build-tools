@@ -54,12 +54,20 @@ export const get_insert_api_variables = (variables: InsertAPIInputs): InsertAPIV
     const { API_DESCRIPTION, API_PATH, RESPONSE_TYPE, REQUEST_TYPE } = variables;
     const LOGIN_STATUS: LoginStatus = validate_login_status(variables.LOGIN_STATUS);
     const HTTP_METHOD: HTTPMethods = validate_http_method(variables.HTTP_METHOD);
-    const CONTROLLER_METHOD = ['api', ...API_PATH.split('/'), HTTP_METHOD.toLowerCase() ].join('_').toLowerCase();
+    const CONTROLLER_METHOD = ['api', ...API_PATH.split('/'), HTTP_METHOD.toLowerCase() ].join('_').toLowerCase().replace(/-/g, "_");
+    const API_PATH_FOLDERS = API_PATH.split('/');
+    const API_PATH_ROOT = API_PATH_FOLDERS.shift() || '';
+    const API_PATH_LAST = API_PATH_FOLDERS.pop() || API_PATH_ROOT;
+    const API_PATH_MIDDLE = API_PATH_FOLDERS.join('/');  // this is still being hacked together, not sure if I will need this
 
     return {
         ...variables,
         LOGIN_STATUS,
         HTTP_METHOD,
+        API_PATH_ROOT,
+        API_PATH_MIDDLE,
+        API_PATH_LAST,
+        HTTP_METHOD_UC: HTTP_METHOD.toUpperCase(),
         API_DESCRIPTION: (API_DESCRIPTION) ? API_DESCRIPTION : `@todo - add description for ${CONTROLLER_METHOD}`,
         CONTROLLER_METHOD,
         REQUEST_TYPE_AS_JSDOC: (REQUEST_TYPE) ? `with ${REQUEST_TYPE}` : '',

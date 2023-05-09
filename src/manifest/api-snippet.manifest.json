@@ -1,17 +1,31 @@
 {
   "variables": {
-    "LOGIN_STATUS": "logged_out",
-    "HTTP_METHOD": "post",
-    "CONTROLLER_CLASS": "UserPasswordController",
-    "API_PATH": "user/password/forgot",
-    "API_DESCRIPTION": "Creates a password reset token and sends it to the user via email",
-    "RESPONSE_TYPE": "ConfirmationResponse",
-    "REQUEST_TYPE": "SubmitEmail"
+    "LOGIN_STATUS": "logged_in",
+    "HTTP_METHOD": "get",
+    "CONTROLLER_CLASS": "JaneInvoiceController",
+    "API_PATH": "invoice/item-data",
+    "API_DESCRIPTION": "Get item linking data for invoices",
+    "REQUEST_TYPE": "JaneInvoiceItemRequest",
+    "RESPONSE_TYPE": "JaneInvoiceItemResponse",
+    "STORE_NAME": "JaneInvoice",
+    "EVENT_NAMESPACE": "JANE_INVOICE_EVENTS",
+    "STORE_ENTITY": "jane_invoice_items"
   },
-  "files": [{
+  "files": [
+    {
       "path": "../../client/src/service/server.laravel-api.ts",
       "token": "// END USER API METHODS",
       "template": "template/insert-api/template--insert-api--server.laravel-api.txt"
+    },
+    {
+      "path": "../../server/app/Http/Controllers/JaneInvoiceController.php",
+      "token": "// END CONTROLLER METHODS",
+      "template": "template/insert-api/template--insert-api--laravel.controller.method.txt"
+    },
+    {
+      "path": "../../client/src/store/store.janeinvoice.ts",
+      "token": "// END STORE METHODS",
+      "template": "template/insert-api/template--insert-api--client.store-request.method.txt"
     }
   ]
 }

@@ -5,6 +5,7 @@
   "main": "./src/index.js",
   "author": "Shane Jennings",
   "dependencies": {
+    "@types/lodash": "^4.14.194",
     "module-alias": "^2.2.2"
   },
   "devDependencies": {
@@ -17,6 +18,9 @@
   },
   "scripts": {
     "build": "tsc && copyfiles -u 1 src/template/**/* dist/",
-    "insert-api-snippets": "npm run build && node dist/insert-api-snippets.js"
+    "insert-api-snippets": "npm run build && node dist/insert-api-snippets.js",
+    "clear-obsidian-client-folder": "rm -rf ../../../client/docs/src/*",
+    "build-obsidian-client-folder": "node ./src/map/create-obsidian-folder.js",
+    "reset-obsidian-folder": "npm run clear-obsidian-client-folder && npm run build-obsidian-client-folder"
   }
 }

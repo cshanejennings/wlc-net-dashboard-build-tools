@@ -30,11 +30,33 @@ const get_imports = (raw_import_urls) => Array.from(raw_import_urls,
     const from = fromUrl.replace(TARGET_FILE_EXTENSION, "");
     return { imports, from };
 });
+const material_ui_core_imports = {};
+const material_ui_lab_imports = {};
+const material_ui_icon_imports = {};
+
+const add_imported_count = (counter, import_name) => {
+  if (!import_name) { return; }
+  const count = counter[import_name] ?? 0;
+  counter[import_name] = count + 1;
+}
+
+const add_imported = (from, imports, counter) => {
+  if (imports.length === 1 && from.trim().length) {
+    const import_name = from.split('/').pop();
+    add_imported_count(counter, import_name);
+  }
+  else if (imports.length) { imports.map(import_name => add_imported_count(counter, import_name))}
+}
 
 const dependency_keys = get_dependencies(["prop-types"]);
 const get_src_from_import = ({ from, imports }) => {
     const dependency = dependency_keys.find((key) => from.startsWith(key));
-    return dependency ? `#${dependency}` : from.replace(/\./g, "_");
+    const src = dependency ? `#${dependency}` : from.replace(/\./g, "_");
+    if (from.startsWith('@material-ui/core')) { add_imported(from.replace('@material-ui/core', ''), imports, material_ui_core_imports); }
+    if (from.startsWith('@material-ui/lab')) { add_imported(from.replace('@material-ui/lab', ''), imports, material_ui_lab_imports); }
+    if (from.startsWith('@material-ui/icons')) { add_imported(from.replace('@material-ui/icons', ''), imports, material_ui_icon_imports); }
+    return src;
+    // return dependency ? `#${dependency}` : from.replace(/\./g, "_");
 };
 
 const get_asset_path = (file_path) => {
@@ -61,9 +83,26 @@ async function crawl_directory(directory) {
       result[asset_path] = [...new Set(imports.flatMap(get_src_from_import).sort())];
     }
   }
+
   const json = JSON.stringify(result, null, 2);
   await fs.promises.writeFile('map.json', json);
   return result;
 }
 
-crawl_directory(path.join(src_path));
+const crawl_directory = async(path.join(src_path));
+
+
+// MUI EXPORT SECTION
+const get_count_array = (counter) => Object.entries(counter)
+  .map((import_name) => ({import_name, count: counter[import_name] }))
+  .filter(({import_name}) => (import_name))
+  .sort((a, b) => (b.import_name > a.import_name))
+  // .sort((a, b) => (b.count - a.count))
+  .map(({import_name, count}) => `${import_name}: ${count}`)
+  console.log(material_ui_lab_imports);
+const material_ui_imports = {
+  "@material-ui/core": get_count_array(material_ui_core_imports),
+  "@material-ui/lab": get_count_array(material_ui_lab_imports),
+  "@material-ui/icons": get_count_array(material_ui_icon_imports),
+};
+await fs.promises.writeFile('mui.json', JSON.stringify(material_ui_imports, null, 2));

@@ -1,0 +1,30 @@
+  
+  // Route::${HTTP_METHOD}('/${API_PATH_LAST}', [${CONTROLLER_CLASS}::class, '${CONTROLLER_METHOD}']);
+  /**
+   * ${API_DESCRIPTION}
+   * ${HTTP_METHOD_UC} route: api/${API_PATH}
+   * @param Request $request
+   * 
+   * @return array
+   */
+  public function ${CONTROLLER_METHOD}(Request $request) : array {
+    $account = $request->user()->account;
+    
+    return ["success" => true];
+  }
+  
+  --example--
+
+  /**
+   * POST route: api/sync-jane-invoices
+   * @param Request $request
+   * 
+   * @return array
+   */
+  public function sync_jane_invoices(Request $request) : array {
+    $account = $request->user()->account;
+    foreach($request->input('invoices') as $key => $invoice) {
+      $account->create_invoice($invoice);
+    }
+    return $this->get_jane_transactions($request);
+  }

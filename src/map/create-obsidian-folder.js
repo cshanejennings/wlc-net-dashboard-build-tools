@@ -7,7 +7,7 @@ const IMPORT_REGEX = /import\s+(?:{([^}]+)}|([^'";\n]+))\s+from\s+['"]([^'"]+)['
 const TARGET_FILE_EXTENSION = /\.(jsx|js|tsx|ts)$/;
 
 const remove_comments = (str) => {
-    return str.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1');
+  return str.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1');
 }
 
 const clean_imports = (imports) => imports.split(/,\s*/)
@@ -18,30 +18,30 @@ const clean_imports = (imports) => imports.split(/,\s*/)
 ));
 
 const get_dependencies = (manual = []) => {
-    const json = JSON.parse(fs.readFileSync(path.join(root_path, 'package.json')));
-    const dependencies = json.dependencies || {};
-    const dev_dependencies = json.devDependencies || {};
-    return [...manual, ...Object.keys(dependencies), ...Object.keys(dev_dependencies)]
+  const json = JSON.parse(fs.readFileSync(path.join(root_path, 'package.json')));
+  const dependencies = json.dependencies || {};
+  const dev_dependencies = json.devDependencies || {};
+  return [...manual, ...Object.keys(dependencies), ...Object.keys(dev_dependencies)]
 }
 
 const get_imports = (raw_import_urls) => Array.from(raw_import_urls,
-    ([, namedImports, defaultImport, fromUrl]) => {
-    const imports = clean_imports(namedImports || defaultImport);
-    const from = fromUrl.replace(TARGET_FILE_EXTENSION, "");
-    return { imports, from };
+  ([, namedImports, defaultImport, fromUrl]) => {
+  const imports = clean_imports(namedImports || defaultImport);
+  const from = fromUrl.replace(TARGET_FILE_EXTENSION, "");
+  return { imports, from };
 });
 
 const dependency_keys = get_dependencies(["prop-types"]);
 const get_src_from_import = ({ from, imports }) => {
-    const dependency = dependency_keys.find((key) => from.startsWith(key));
-    return dependency ? `#${dependency}` : from.replace(/\./g, "_");
+  const dependency = dependency_keys.find((key) => from.startsWith(key));
+  return dependency ? `#${dependency}` : from.replace(/\./g, "_");
 };
 
 const get_asset_path = (file_path) => {
-    return file_path
-        .replace(/\\/g, '/')
-        .replace(/.*client\//, '')
-        .split('.').slice(0, -1).join('_');
+  return file_path
+    .replace(/\\/g, '/')
+    .replace(/.*client\//, '')
+    .split('.').slice(0, -1).join('_');
 }
 
 async function crawl_directory(directory) {
@@ -66,28 +66,27 @@ async function crawl_directory(directory) {
   return result;
 }
 
-const map_folder = path.join(__dirname, '../../../map');
 const sanitize_content_line = (item) => {
-    item = item.replace("@", "");
-    return (item.indexOf('#') === 0) ? `${item}\n` : `[[${item}]]\n`
+  item = item.replace("@", "");
+  return (item.indexOf('#') === 0) ? `${item}\n` : `[[src/${item}]]\n`
 }
 
+const map_folder = path.join(root_path, 'docs');
 const write_data = (data) => {
-    // Create folders and files according to the keys in the data object
-    for (const key in data) {
-        const folder_path = path.join(map_folder, path.dirname(key));
-        fs.mkdirSync(folder_path, { recursive: true });
-
-        const raw_file_path = path.join(map_folder, `${key}.md`);
-        const parts = raw_file_path.split('\\');
-        const file_name = parts.pop()
-            .replace(/\./g, '_')
-            .replace(/_md$/, ".md");
-        const file_path = [...parts, file_name].join('\\');
-        const contents = data[key].map(sanitize_content_line).join('');
-        fs.writeFileSync(file_path, contents)
-    }
+  // Create folders and files according to the keys in the data object
+  for (const key in data) {
+    const folder_path = path.join(map_folder, path.dirname(key));
+    fs.mkdirSync(folder_path, { recursive: true });
+    const raw_file_path = path.join(map_folder, `${key}.md`);
+    const parts = raw_file_path.split('\\');
+    const file_name = parts.pop();
+    const file_path = [...parts, file_name].join('\\');
+    const contents = data[key].map(sanitize_content_line).join('');
+    fs.writeFileSync(file_path, contents)
+  }
 }
 
-const file_map = crawl_directory(path.join(src_path));
-write_data(file_map);
+
+crawl_directory(path.join(src_path)).then((file_map) => {
+  write_data(file_map);
+});

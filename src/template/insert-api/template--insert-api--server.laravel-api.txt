@@ -1,7 +1,7 @@
 
 /**
  * ${API_DESCRIPTION}
- * ${HTTP_METHOD} route: api/${API_PATH}
+ * ${HTTP_METHOD_UC} route: api/${API_PATH}
  * @see App\Http\Controllers\${CONTROLLER_CLASS}::${CONTROLLER_METHOD}
  * @param request ServerRequest ${REQUEST_TYPE_AS_JSDOC}
  * @returns Promise<AxiosResponse<${RESPONSE_TYPE}>>
