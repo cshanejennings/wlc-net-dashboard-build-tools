@@ -11,6 +11,7 @@
   "devDependencies": {
     "@types/node": "^18.16.1",
     "copyfiles": "^2.4.1",
+    "live-server": "^1.2.2",
     "typescript": "^5.0.4"
   },
   "_moduleAliases": {
@@ -21,6 +22,7 @@
     "insert-api-snippets": "npm run build && node dist/insert-api-snippets.js",
     "clear-obsidian-client-folder": "rm -rf ../../../client/docs/src/*",
     "build-obsidian-client-folder": "node ./src/map/create-obsidian-folder.js",
-    "reset-obsidian-folder": "npm run clear-obsidian-client-folder && npm run build-obsidian-client-folder"
+    "reset-obsidian-folder": "npm run clear-obsidian-client-folder && npm run build-obsidian-client-folder",
+    "start": "live-server ./public/typescript-to-model --port=3001"
   }
 }

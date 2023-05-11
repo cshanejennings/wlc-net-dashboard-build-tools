@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TypeScript and PHP Parser</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <style>
+            pre {
+                background-color: black;
+                color: white;
+                height: 160px;
+                overflow-y: scroll;
+            }
+            .line-number {
+                user-select: none;
+            }
+            .missing-left {
+                background-color: #FF9;
+            }
+            .missing-right {
+                background-color: #F99;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container py-5">
+            <h1>TypeScript and PHP Parser</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="typescriptInput">TypeScript Input:</label>
+                        <textarea class="form-control" id="typescriptInput" name="typescriptInput" rows="10">
+export type JaneInvoice = Record<string, any> & {
+    invoice_number: string;  // "DocNumber" => "12345",
+    invoice_date: string; // "TxnDate" => "2022-01-03",
+    jane_pt_id: number;
+    practitioner: string;
+    income_category: string;
+    jane_item_name: string;
+    notes: any;
+    status: JaneStatus;    
+    jane_billing_lines: JaneInvoiceBillingLine[];
+    amt_unit_cost: number; 
+    amt_unit_price: number; // "UnitPrice" => 100.0,
+    amt_subtotal: number;
+    amt_tax: number;
+    tax_code: JaneTaxCode;
+    // amt_hst: number; // 'TotalTax' => 0.0,
+    // amt_gst: number; // 'TotalTax' => 0.0,
+    amt_total: number;  // "Amount" => 100.0,
+    amt_collected: number;
+    amt_balance: number;
+    last_qb_update?: string;
+}
+                        </textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="typescriptOutput">TypeScript Output:</label>
+                        <pre onclick="selectText(this)" class="form-control sync-scroll" id="typescriptOutput" style="height: 160px; overflow-y: scroll;"></pre>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="parseAndCompare()">Submit</button>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="phpInput">PHP Input:</label>
+                        <textarea class="form-control" id="phpInput" name="phpInput" rows="10">
+protected $casts = [
+    'invoice_number' => 'string',
+    'invoice_date' => 'string',
+    'jane_pt_id' => 'string',
+    'practitioner' => 'string',
+    'income_category' => 'string',
+    'jane_item_name' => 'string',
+    'notes' => 'array',
+    'status' => 'string',
+    'amt_unit_cost' => 'number',
+    'amt_unit_price' => 'number',
+    'amt_subtotal' => 'float',
+    'amt_hst' => 'float',
+    'amt_gst' => 'float',
+    'amt_total' => 'float',
+    'amt_collected' => 'float',
+    'amt_balance' => 'float',
+    'last_qb_update' => 'string',
+];
+                        </textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="phpOutput">PHP Output:</label>
+                        <pre onclick="selectText(this)" class="form-control sync-scroll" id="phpOutput" style="height: 160px; overflow-y: scroll;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+    </html>
+    
