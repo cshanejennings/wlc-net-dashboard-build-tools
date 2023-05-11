@@ -9,89 +9,102 @@
                 color: white;
                 height: 160px;
                 overflow-y: scroll;
+                font-size: 12px !important;
             }
             .line-number {
                 user-select: none;
             }
+            .property-value {
+                font-family:'Courier New', Courier, monospace;
+                /* background-color: #eee; */
+                color: #444;
+                padding-left: 5px;
+                padding-right: 5px;
+                float: right;
+            }
+            .output-line {
+                border-bottom: 1px dotted #ddd;
+                width: 100%;
+                display: inline-block;
+                padding: 1px 0;
+            }
+            svg {
+                fill: #fff;
+                margin-top: -4px;
+            }
+            
+            .line-number.missing-right {
+                background-color: #933;
+                color: #fff;
+            }
+
             .missing-left {
-                background-color: #FF9;
+                background-color :lightpink;
             }
             .missing-right {
-                background-color: #F99;
+                color: #F33;
+            }
+            .control-bar {
+                border-top: 1px solid #ccc;
+                border-bottom: 1px solid #ccc;
+                margin-top: 10px;
+                margin-bottom: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+
             }
         </style>
     </head>
-    <body>
-        <div class="container py-5">
+    <body class="dark-theme">
+        <div class="container">
             <h1>TypeScript and PHP Parser</h1>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="typescriptInput">TypeScript Input:</label>
-                        <textarea class="form-control" id="typescriptInput" name="typescriptInput" rows="10">
-export type JaneInvoice = Record<string, any> & {
-    invoice_number: string;  // "DocNumber" => "12345",
-    invoice_date: string; // "TxnDate" => "2022-01-03",
-    jane_pt_id: number;
-    practitioner: string;
-    income_category: string;
-    jane_item_name: string;
-    notes: any;
-    status: JaneStatus;    
-    jane_billing_lines: JaneInvoiceBillingLine[];
-    amt_unit_cost: number; 
-    amt_unit_price: number; // "UnitPrice" => 100.0,
-    amt_subtotal: number;
-    amt_tax: number;
-    tax_code: JaneTaxCode;
-    // amt_hst: number; // 'TotalTax' => 0.0,
-    // amt_gst: number; // 'TotalTax' => 0.0,
-    amt_total: number;  // "Amount" => 100.0,
-    amt_collected: number;
-    amt_balance: number;
-    last_qb_update?: string;
-}
-                        </textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="typescriptOutput">TypeScript Output:</label>
-                        <pre onclick="selectText(this)" class="form-control sync-scroll" id="typescriptOutput" style="height: 160px; overflow-y: scroll;"></pre>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="parseAndCompare()">Submit</button>
+                        <div class="form-group">
+                            <label for="typescriptInput">TypeScript Input:</label>
+                            <textarea class="form-control" id="left-input" data-parser="typescript" rows="10"></textarea>
+                        </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="phpInput">PHP Input:</label>
-                        <textarea class="form-control" id="phpInput" name="phpInput" rows="10">
-protected $casts = [
-    'invoice_number' => 'string',
-    'invoice_date' => 'string',
-    'jane_pt_id' => 'string',
-    'practitioner' => 'string',
-    'income_category' => 'string',
-    'jane_item_name' => 'string',
-    'notes' => 'array',
-    'status' => 'string',
-    'amt_unit_cost' => 'number',
-    'amt_unit_price' => 'number',
-    'amt_subtotal' => 'float',
-    'amt_hst' => 'float',
-    'amt_gst' => 'float',
-    'amt_total' => 'float',
-    'amt_collected' => 'float',
-    'amt_balance' => 'float',
-    'last_qb_update' => 'string',
-];
-                        </textarea>
+                        <textarea class="form-control" id="right-input" data-parser="php_cast" rows="10"></textarea>
                     </div>
+                </div>
+            </div>
+            <div class="row control-bar">
+                <div class="col-md-6">
+                    <button id="compare-left-and-right" type="button" class="btn btn-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg"  width="15" height="15" viewBox="0 0 512 512">
+                            <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                            <path d="M320 488c0 9.5-5.6 18.1-14.2 21.9s-18.8 2.3-25.8-4.1l-80-72c-5.1-4.6-7.9-11-7.9-17.8s2.9-13.3 7.9-17.8l80-72c7-6.3 17.2-7.9 25.8-4.1s14.2 12.4 14.2 21.9v40h16c35.3 0 64-28.7 64-64V153.3C371.7 141 352 112.8 352 80c0-44.2 35.8-80 80-80s80 35.8 80 80c0 32.8-19.7 61-48 73.3V320c0 70.7-57.3 128-128 128H320v40zM456 80a24 24 0 1 0 -48 0 24 24 0 1 0 48 0zM192 24c0-9.5 5.6-18.1 14.2-21.9s18.8-2.3 25.8 4.1l80 72c5.1 4.6 7.9 11 7.9 17.8s-2.9 13.3-7.9 17.8l-80 72c-7 6.3-17.2 7.9-25.8 4.1s-14.2-12.4-14.2-21.9V128H176c-35.3 0-64 28.7-64 64V358.7c28.3 12.3 48 40.5 48 73.3c0 44.2-35.8 80-80 80s-80-35.8-80-80c0-32.8 19.7-61 48-73.3V192c0-70.7 57.3-128 128-128h16V24zM56 432a24 24 0 1 0 48 0 24 24 0 1 0 -48 0z"/>
+                        </svg>
+                        Compare
+                    </button>
+                    <button id="expand-output" type="button" class="btn btn-secondary btn-sm">
+                        Expand output
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="typescriptOutput">TypeScript Output:</label>
+                        <pre class="form-control compare-output sync-scroll" id="left-output" style="height: 160px; overflow-y: scroll;"></pre>
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label for="phpOutput">PHP Output:</label>
-                        <pre onclick="selectText(this)" class="form-control sync-scroll" id="phpOutput" style="height: 160px; overflow-y: scroll;"></pre>
+                        <pre class="form-control compare-output sync-scroll" id="right-output" style="height: 160px; overflow-y: scroll;"></pre>
                     </div>
                 </div>
             </div>
         </div>
+        <script src="dom-prep.js"></script>
         <script src="script.js"></script>
+        <!-- Comment auto-test.js if not testing -->
+        <script src="auto-test.js"></script>
     </body>
     </html>
     
