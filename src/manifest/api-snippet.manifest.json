@@ -1,15 +1,15 @@
 {
   "variables": {
     "LOGIN_STATUS": "logged_in",
-    "HTTP_METHOD": "get",
+    "HTTP_METHOD": "post",
     "CONTROLLER_CLASS": "JaneInvoiceController",
-    "API_PATH": "invoice/item-data",
-    "API_DESCRIPTION": "Get item linking data for invoices",
-    "REQUEST_TYPE": "JaneInvoiceItemRequest",
-    "RESPONSE_TYPE": "JaneInvoiceItemResponse",
+    "API_PATH": "invoice/import-csv",
+    "API_DESCRIPTION": "Import Jane Invoices from CSV",
+    "REQUEST_TYPE": "JaneInvoiceCSVImportRequest",
+    "RESPONSE_TYPE": "JaneInvoiceCSVImportResponse",
     "STORE_NAME": "JaneInvoice",
     "EVENT_NAMESPACE": "JANE_INVOICE_EVENTS",
-    "STORE_ENTITY": "jane_invoice_items"
+    "STORE_ENTITY": "jane_invoice_imports"
   },
   "files": [
     {
