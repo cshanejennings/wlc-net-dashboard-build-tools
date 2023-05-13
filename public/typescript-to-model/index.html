@@ -1,110 +1,263 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>TypeScript and PHP Parser</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <style>
-            pre {
-                background-color: black;
-                color: white;
-                height: 160px;
-                overflow-y: scroll;
-                font-size: 12px !important;
-            }
-            .line-number {
-                user-select: none;
-            }
-            .property-value {
-                font-family:'Courier New', Courier, monospace;
-                /* background-color: #eee; */
-                color: #444;
-                padding-left: 5px;
-                padding-right: 5px;
-                float: right;
-            }
-            .output-line {
-                border-bottom: 1px dotted #ddd;
-                width: 100%;
-                display: inline-block;
-                padding: 1px 0;
-            }
-            svg {
-                fill: #fff;
-                margin-top: -4px;
-            }
-            
-            .line-number.missing-right {
-                background-color: #933;
-                color: #fff;
-            }
+<html data-bs-theme="dark">
+  <head>
+    <title>TypeScript and PHP Parser</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/css/bootstrap.min.css"
+    />
+    <style>
+      [data-bs-theme="light"] {
+        --property-value-bg: #eee;
+        --property-value-text: #333;
+        --text-color: #444;
+        --subdued-text-color: #aaa;
+        --missing-right: #933;
+        --separator-color: #ccc;
+        --scrollbar-track-color: #e7e7e7;
+        --scrollbar-thumb-color: #d55959;
+        --scrollbar-border-color: #cacaca;
+      }
 
-            .missing-left {
-                background-color :lightpink;
-            }
-            .missing-right {
-                color: #F33;
-            }
-            .control-bar {
-                border-top: 1px solid #ccc;
-                border-bottom: 1px solid #ccc;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                padding-top: 10px;
-                padding-bottom: 10px;
+      [data-bs-theme="dark"] {
+        --property-value-bg: #333;
+        --property-value-text: #aaa;
+        --text-color: #fff;
+        --subdued-text-color: #666;
+        --missing-right: #faa;
+        --separator-color: #444;
 
-            }
-        </style>
-    </head>
-    <body class="dark-theme">
-        <div class="container">
-            <h1>TypeScript and PHP Parser</h1>
-            <div class="row">
-                <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="typescriptInput">TypeScript Input:</label>
-                            <textarea class="form-control" id="left-input" data-parser="typescript" rows="10"></textarea>
-                        </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="phpInput">PHP Input:</label>
-                        <textarea class="form-control" id="right-input" data-parser="php_cast" rows="10"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="row control-bar">
-                <div class="col-md-6">
-                    <button id="compare-left-and-right" type="button" class="btn btn-primary btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg"  width="15" height="15" viewBox="0 0 512 512">
-                            <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                            <path d="M320 488c0 9.5-5.6 18.1-14.2 21.9s-18.8 2.3-25.8-4.1l-80-72c-5.1-4.6-7.9-11-7.9-17.8s2.9-13.3 7.9-17.8l80-72c7-6.3 17.2-7.9 25.8-4.1s14.2 12.4 14.2 21.9v40h16c35.3 0 64-28.7 64-64V153.3C371.7 141 352 112.8 352 80c0-44.2 35.8-80 80-80s80 35.8 80 80c0 32.8-19.7 61-48 73.3V320c0 70.7-57.3 128-128 128H320v40zM456 80a24 24 0 1 0 -48 0 24 24 0 1 0 48 0zM192 24c0-9.5 5.6-18.1 14.2-21.9s18.8-2.3 25.8 4.1l80 72c5.1 4.6 7.9 11 7.9 17.8s-2.9 13.3-7.9 17.8l-80 72c-7 6.3-17.2 7.9-25.8 4.1s-14.2-12.4-14.2-21.9V128H176c-35.3 0-64 28.7-64 64V358.7c28.3 12.3 48 40.5 48 73.3c0 44.2-35.8 80-80 80s-80-35.8-80-80c0-32.8 19.7-61 48-73.3V192c0-70.7 57.3-128 128-128h16V24zM56 432a24 24 0 1 0 48 0 24 24 0 1 0 -48 0z"/>
-                        </svg>
-                        Compare
-                    </button>
-                    <button id="expand-output" type="button" class="btn btn-secondary btn-sm">
-                        Expand output
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="typescriptOutput">TypeScript Output:</label>
-                        <pre class="form-control compare-output sync-scroll" id="left-output" style="height: 160px; overflow-y: scroll;"></pre>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="phpOutput">PHP Output:</label>
-                        <pre class="form-control compare-output sync-scroll" id="right-output" style="height: 160px; overflow-y: scroll;"></pre>
-                    </div>
-                </div>
-            </div>
+        --scrollbar-track-color: #545454;
+        --scrollbar-thumb-color: #ae4848;
+        --scrollbar-border-color: #757575;
+      }
+      textarea {
+        cursor: auto;
+      }
+      ::-webkit-scrollbar {
+        width: 16px;
+        cursor: pointer;
+      }
+
+      ::-webkit-scrollbar-track {
+        border-radius: 8px;
+        background-color: var(--scrollbar-track-color);
+        border: 1px solid var(--scrollbar-border-color);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+        background-color: var(--scrollbar-thumb-color);
+      }
+
+      pre {
+        height: 160px;
+        overflow-y: scroll;
+        font-size: 12px !important;
+      }
+      .line-number {
+        user-select: none;
+        margin-left: -10px;
+        border-right: 1px solid;
+        color: var(--subdued-text-color);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      .property-value {
+        font-family: "Courier New", Courier, monospace;
+        width: 200px;
+        text-align: right;
+        padding-left: 5px;
+        padding-right: 5px;
+        float: right;
+        font-size: 11px;
+      }
+      .property-value {
+        background-color: var(--property-value-bg);
+        color: var(--property-value-text);
+      }
+
+      .output-line {
+        border-bottom: 1px dotted var(--separator-color);
+        width: 100%;
+        display: inline-block;
+        padding: 1px 0;
+      }
+      svg {
+        margin-top: -4px;
+      }
+
+      .missing-left {
+        border-color: darkslateblue;
+      }
+      .missing-right {
+        color: var(--missing-right);
+      }
+      .control-bar {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body class="">
+    <header class="navbar sticky-top">
+      <nav
+        class="container-xxl bd-gutter flex-wrap flex-lg-nowrap"
+        aria-label="Main navigation"
+      >
+        <div
+          class="offcanvas-lg offcanvas-end flex-grow-1"
+          tabindex="-1"
+          id="bdNavbar"
+          aria-labelledby="bdNavbarOffcanvasLabel"
+          data-bs-scroll="true"
+        >
+          <div class="offcanvas-body p-4 pt-0 p-lg-0">
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+              <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                <button
+                  id="enable-dark-theme"
+                  class="theme-toggle btn btn-sm active"
+                  data-bs-theme-value="dark"
+                >
+                  <svg
+                    class="bi me-2 theme-icon"
+                    width="14px"
+                    height="14px"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 512 512"
+                  >
+                    <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                      d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z"
+                    />
+                  </svg>
+                  Light
+                </button>
+              </li>
+              <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white"></div>
+                <hr class="d-lg-none my-2 text-white-50" />
+              </li>
+              <li class="py-2 py-lg-1 col-12 col-lg-auto">
+                <button
+                  id="enable-light-theme"
+                  class="btn btn-sm theme-toggle"
+                  data-bs-theme-value="dark"
+                >
+                  <svg
+                    class="bi me-2 theme-icon"
+                    width="14px"
+                    height="14px"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 384 512"
+                  >
+                    <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                      d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"
+                    />
+                  </svg>
+                  Dark
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <script src="dom-prep.js"></script>
-        <script src="script.js"></script>
-        <!-- Comment auto-test.js if not testing -->
-        <script src="auto-test.js"></script>
-    </body>
-    </html>
-    
+      </nav>
+    </header>
+
+    <div class="container">
+      <h6>Compare Entities</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="typescriptInput">TypeScript Input:</label>
+            <textarea
+              class="form-control entry"
+              id="left-input"
+              data-parser="typescript"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="phpInput">PHP Input:</label>
+            <textarea
+              class="form-control entry"
+              id="right-input"
+              data-parser="php_cast"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row control-bar">
+        <div class="col-md-6">
+          <button
+            id="compare-left-and-right"
+            type="button"
+            class="btn btn-primary btn-sm"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 512 512"
+            >
+              <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M320 488c0 9.5-5.6 18.1-14.2 21.9s-18.8 2.3-25.8-4.1l-80-72c-5.1-4.6-7.9-11-7.9-17.8s2.9-13.3 7.9-17.8l80-72c7-6.3 17.2-7.9 25.8-4.1s14.2 12.4 14.2 21.9v40h16c35.3 0 64-28.7 64-64V153.3C371.7 141 352 112.8 352 80c0-44.2 35.8-80 80-80s80 35.8 80 80c0 32.8-19.7 61-48 73.3V320c0 70.7-57.3 128-128 128H320v40zM456 80a24 24 0 1 0 -48 0 24 24 0 1 0 48 0zM192 24c0-9.5 5.6-18.1 14.2-21.9s18.8-2.3 25.8 4.1l80 72c5.1 4.6 7.9 11 7.9 17.8s-2.9 13.3-7.9 17.8l-80 72c-7 6.3-17.2 7.9-25.8 4.1s-14.2-12.4-14.2-21.9V128H176c-35.3 0-64 28.7-64 64V358.7c28.3 12.3 48 40.5 48 73.3c0 44.2-35.8 80-80 80s-80-35.8-80-80c0-32.8 19.7-61 48-73.3V192c0-70.7 57.3-128 128-128h16V24zM56 432a24 24 0 1 0 48 0 24 24 0 1 0 -48 0z"
+              />
+            </svg>
+            Compare
+          </button>
+          <button
+            id="expand-output"
+            type="button"
+            class="btn btn-secondary btn-sm"
+          >
+            Expand output
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="typescriptOutput">TypeScript Output:</label>
+            <hr />
+            <pre
+              class="form-control compare-output sync-scroll"
+              id="left-output"
+              style="height: 160px; overflow-y: scroll"
+            ></pre>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="phpOutput">PHP Output:</label>
+            <hr />
+            <pre
+              class="form-control compare-output sync-scroll"
+              id="right-output"
+              style="height: 160px; overflow-y: scroll"
+            ></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="dom-prep.js"></script>
+    <script src="script.js"></script>
+    <!-- Comment auto-test.js if not testing -->
+    <!-- <script src="auto-test.js"></script> -->
+  </body>
+</html>

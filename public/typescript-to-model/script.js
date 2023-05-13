@@ -1,20 +1,36 @@
 function parseAndCompare(el, outputToggle) {
-    const parseOptions = {
-      typescript: (text) => {
-        const regex = /(\w+): ([\w<>[\]]+);/g;
-        return Array.from(text.matchAll(regex), (match) => ({
-          item: match[1],
-          property: match[2],
-        }));
-      },
-      php_cast: (text) => {
-        const regex = /'(\w+)' => '(\w+)'/g;
-        return Array.from(text.matchAll(regex), (match) => ({
-          item: match[1],
-          property: match[2],
-        }));
-      },
-    };
+  const parseOptions = {
+    typescript: (str) => {
+      const regex = /(\w+): ([\w<>[\]]+);/;
+      const lines = str.split('\n').map(l => l.trim().replace(/\?:/g, ":").split('\/\/'));
+      return lines.reduce((props, [propstr, comment]) => {
+        const match = propstr.match(regex);
+        if (match) {
+          props.push({
+            item: match[1],
+            property: match[2],
+            comment: comment ?? "",
+          });
+        }
+        return props;
+      }, []);
+    },
+    php_cast: (str) => {
+      const regex = /['"](\w+)['"]\s*=>\s*['"](\w+)['"]/;;
+      const lines = str.split('\n').map(l => l.trim().split('\/\/'));
+      return lines.reduce((props, [propstr, comment]) => {
+        const match = propstr.match(regex);
+        if (match) {
+          props.push({
+            item: match[1],
+            property: match[2],
+            comment: comment ?? "",
+          });
+        }
+        return props;
+      }, []);
+    },
+  };
   
     const parse = (input) => {
       const parseKey = input.getAttribute("data-parser");
@@ -70,7 +86,7 @@ function parseAndCompare(el, outputToggle) {
   
     document.getElementById("left-output").innerHTML = output.left.join("\n");
     document.getElementById("right-output").innerHTML = output.right.join("\n");
-    outputToggle.display();
+    outputToggle.show();
     outputToggle.autoHeight();
     document.querySelectorAll(".auto-select").forEach((el) => el.addEventListener("click", () => {
         selectText(el);
