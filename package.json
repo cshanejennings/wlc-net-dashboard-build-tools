@@ -6,6 +6,7 @@
   "author": "Shane Jennings",
   "dependencies": {
     "@types/lodash": "^4.14.194",
+    "markdown-toc": "^1.2.0",
     "module-alias": "^2.2.2"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "clear-obsidian-client-folder": "rm -rf ../../../client/docs/src/*",
     "build-obsidian-client-folder": "node ./src/map/create-obsidian-folder.js",
     "reset-obsidian-folder": "npm run clear-obsidian-client-folder && npm run build-obsidian-client-folder",
-    "start": "live-server ./public/typescript-to-model --port=3001"
+    "start": "live-server ./public/typescript-to-model --port=3001",
+    "update-toc": "node ./src/docs/update-toc.js"
   }
 }
