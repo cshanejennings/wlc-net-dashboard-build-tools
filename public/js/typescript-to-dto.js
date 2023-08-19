@@ -26,17 +26,31 @@ function extractPropertiesFromTypeScript(tsDeclaration) {
       const readonly = line.includes('readonly');
       const propertyLine = line.split('*/')[1]?.trim() || line;
       const parts = propertyLine.replace('readonly', '').split(':');
-      if (parts.length < 2) return; // Ignore lines that don't have a colon
+      if (parts.length < 2) return;
       const [property, typeInfo] = parts;
-      const type = typeInfo.split(';')[0].trim();
-      const nullable = type.includes('?');
-      const phpType = type.replace('?', '').replace('[]', 'array').replace('| null', '').replace('string', 'string').replace('number', 'int').replace('boolean', 'bool');
+      const nullable = property.includes('?');
+      const propertyName = property.replace('?', '').trim();
+      let phpDocType = typeInfo.split(';')[0].trim().replace('| null', '');
+      let type = typeInfo.split(';')[0].trim().replace('| null', '');
+      // Check if the type contains '|' character, indicating a union of string literals
+      if (type.includes('|')) {
+        type = 'string'; // Treat as string type
+        // Optionally, you can capture the accepted values and store them
+        // const acceptedValues = phpType.split('|').map(value => value.trim().replace(/'/g, '')); 
+      } else {
+        type = type.replace('string', 'string').replace('number', 'int').replace('boolean', 'bool');
+      }
+      type = (type.indexOf('[]') !== -1) ? 'array' : type;
+
+
       properties.push({
         comment: comment.replace('/**', ' ').replace('*/', ' ').trim(),
-        property: property.trim(),
-        type: phpType,
+        property: propertyName,
+        phpDocType,
+        type,
         nullable,
-        readonly
+        readonly,
+        // acceptedValues, // Optionally include accepted values if needed
       });
       comment = ''; // Reset comment
     }
@@ -45,13 +59,15 @@ function extractPropertiesFromTypeScript(tsDeclaration) {
   return { className, properties };
 }
 
+
+
 function createPHPClassTemplate({ className, properties }) {
   let class_props = [];
   let class_constructor = [];
   properties.forEach((prop) => {
-    const { property, type, nullable, readonly, comment } = prop;
+    const { property, type, phpDocType, nullable, readonly, comment } = prop;
     if (comment) {
-      class_props.push(`  /** ${comment} */`);
+      class_props.push(`  /** @var ${phpDocType} ${comment} */`);
     }
     if (readonly) {
       class_props.push(`  /** @readonly */`);
@@ -60,7 +76,8 @@ function createPHPClassTemplate({ className, properties }) {
     class_props.push(``);
     
     // Check if the type is an array of a specific class
-    const arrayMatch = type.match(/(\w+)\[\]/);
+    const arrayMatch = phpDocType.match(/(\w+)\[\]/);
+
     if (arrayMatch) {
       const arrayType = arrayMatch[1];
       class_constructor.push(`    $this->set_typed_array("${property}", ${arrayType}::class);`);
@@ -72,8 +89,8 @@ function createPHPClassTemplate({ className, properties }) {
   });
   return [
     `<?php`,
-    `namespace App\Services\Shopify\DTO;`,
-    `use App\Services\DTOBase;`,
+    `namespace App\\Services\\Shopify\\DTO;`,
+    `use App\\Services\\DTOBase;`,
     `class ${className} extends DTOBase`,
     `{`,
     ...class_props,

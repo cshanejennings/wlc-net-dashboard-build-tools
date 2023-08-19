@@ -31,7 +31,7 @@ const autoTest = (toggleOutputs) => {
             `note?: string;`,
             ``,
             `/** The extra information that's added to the order. */`,
-            `note_attributes?: { name: string; value: string }[];`,
+            `note_attributes?: ShopifyProperty[];`,
             ``,
             `/** The customer's email address. */`,
             `email?: string;`,
