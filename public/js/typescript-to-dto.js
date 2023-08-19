@@ -1,104 +1,119 @@
-function parseAndCompare(el, outputToggle) {
-    const parseOptions = {
-      typescript: (str) => {
-        const regex = /(\w+): ([\w<>[\]]+);/;
-        const lines = str.split('\n').map(l => l.trim().replace(/\?:/g, ":").split('\/\/'));
-        return lines.reduce((props, [propstr, comment]) => {
-          const match = propstr.match(regex);
-          if (match) {
-            props.push({
-              item: match[1],
-              property: match[2],
-              comment: comment ?? "",
-            });
-          }
-          return props;
-        }, []);
-      },
-      php_cast: (str) => {
-        const regex = /['"](\w+)['"]\s*=>\s*['"](\w+)['"]/;;
-        const lines = str.split('\n').map(l => l.trim().split('\/\/'));
-        return lines.reduce((props, [propstr, comment]) => {
-          const match = propstr.match(regex);
-          if (match) {
-            props.push({
-              item: match[1],
-              property: match[2],
-              comment: comment ?? "",
-            });
-          }
-          return props;
-        }, []);
-      },
-    };
-    
-      const parse = (input) => {
-        const parseKey = input.getAttribute("data-parser");
-        const parser = parseOptions[parseKey];
-        return parser(input.value);
-      };
-      const parsed = {
-        left: parse(el.left),
-        right: parse(el.right),
-      };
-    
-      // Get all unique 'item' values from both arrays
-      let allItems = new Set([
-        ...parsed.left.map((el) => el.item),
-        ...parsed.right.map((el) => el.item),
-      ]);
-    
-      // Initialize the padded arrays
-      const output = {
-        left: [],
-        right: [],
-      };
-    
-      // For each unique item, add the corresponding line to each output array
-      let line = 1;
-      for (let item of allItems) {
-        // Find the entry in leftParsed & rightParsedwith the current item
-        const entry = {
-          left: parsed.left.find((el) => el.item === item),
-          right: parsed.right.find((el) => el.item === item),
-        };
-  
-        const add_line = (current_side, other_side) => {
-          const current_entry = entry[current_side];
-          const other_entry = entry[other_side];
-          const line_id = String(line).padStart(2, "0");
-          const missing_class = (!current_entry) ? ` missing-${current_side}` : (!other_entry) ? ` missing-${other_side}` : "";
-          const line_number = `<span class="line-number${missing_class}">${line_id}: </span>`;
-  
-          const prop = `<span class="auto-select property${missing_class}">${item}</span>`
-          const line_text = current_entry
-          ? `${line_number} ${prop} <span class="property-value">${current_entry.property}</span>`
-          : `${line_number} ${prop}`
-  
-            output[current_side].push( `<span class="output-line">${line_text}</span>`);
-        }
-  
-        add_line('left', 'right');
-        add_line('right', 'left');
-    
-        line++;
-      }
-    
-      document.getElementById("left-output").innerHTML = output.left.join("\n");
-      document.getElementById("right-output").innerHTML = output.right.join("\n");
-      outputToggle.show();
-      outputToggle.autoHeight();
-      document.querySelectorAll(".auto-select").forEach((el) => el.addEventListener("click", () => {
-          selectText(el);
-      }));
-    }
-    
-    document
-      .getElementById("compare-left-and-right")
-      .addEventListener("click", () => {
-        parseAndCompare({
-          left: document.getElementById("left-input"),
-          right: document.getElementById("right-input"),
-        }, toggleOutputs)
+const DOC = {
+  typescript: document.getElementById("typescript"),
+  php_dto: document.getElementById("php-dto"),
+  create_dto: document.getElementById("create-dto"),
+};
+
+function extractPropertiesFromTypeScript(tsDeclaration) {
+  const lines = tsDeclaration.split('\n');
+  let className = '';
+  let properties = [];
+  let insideClass = false;
+  let comment = '';
+
+  lines.forEach((line) => {
+    line = line.trim();
+    if (line.startsWith('/**')) {
+      comment = line;
+    } else if (line.endsWith('*/')) {
+      comment += ' ' + line;
+    } else if (line.startsWith('export type')) {
+      className = line.split(' ')[2];
+      insideClass = true;
+    } else if (insideClass && line.startsWith('}')) {
+      insideClass = false;
+    } else if (insideClass && line.length > 0) {
+      const readonly = line.includes('readonly');
+      const propertyLine = line.split('*/')[1]?.trim() || line;
+      const parts = propertyLine.replace('readonly', '').split(':');
+      if (parts.length < 2) return; // Ignore lines that don't have a colon
+      const [property, typeInfo] = parts;
+      const type = typeInfo.split(';')[0].trim();
+      const nullable = type.includes('?');
+      const phpType = type.replace('?', '').replace('[]', 'array').replace('| null', '').replace('string', 'string').replace('number', 'int').replace('boolean', 'bool');
+      properties.push({
+        comment: comment.replace('/**', ' ').replace('*/', ' ').trim(),
+        property: property.trim(),
+        type: phpType,
+        nullable,
+        readonly
       });
+      comment = ''; // Reset comment
+    }
+  });
+
+  return { className, properties };
+}
+
+function createPHPClassTemplate({ className, properties }) {
+  let class_props = [];
+  let class_constructor = [];
+  properties.forEach((prop) => {
+    const { property, type, nullable, readonly, comment } = prop;
+    if (comment) {
+      class_props.push(`  /** ${comment} */`);
+    }
+    if (readonly) {
+      class_props.push(`  /** @readonly */`);
+    }
+    class_props.push(`  public ${nullable ? '?' : ''}${type} $${property};`);
+    class_props.push(``);
     
+    // Check if the type is an array of a specific class
+    const arrayMatch = type.match(/(\w+)\[\]/);
+    if (arrayMatch) {
+      const arrayType = arrayMatch[1];
+      class_constructor.push(`    $this->set_typed_array("${property}", ${arrayType}::class);`);
+    } else if (type === 'int' || type === 'string' || type === 'bool') {
+      class_constructor.push(`    $this->set_prop("${property}");`);
+    } else {
+      class_constructor.push(`    $this->set_typed_prop("${property}", ${type}::class);`);
+    }
+  });
+  return [
+    `<?php`,
+    `namespace App\Services\Shopify\DTO;`,
+    `use App\Services\DTOBase;`,
+    `class ${className} extends DTOBase`,
+    `{`,
+    ...class_props,
+    `  public function __construct(array $data)`,
+    `  {`,
+    `    parent::__construct($data);`,
+    ...class_constructor,
+    `  }`,
+    '}'
+  ].join('\n');
+}
+
+function transformTypeScriptToPHP(tsDeclaration) {
+  const { className, properties } = extractPropertiesFromTypeScript(tsDeclaration);
+  const definition = createPHPClassTemplate({ className, properties });
+  DOC.php_dto.textContent = definition;
+  DOC.php_dto.style.display = 'block';
+}
+
+
+
+
+function createDTOClass(el, outputToggle) {
+  const tsDeclaration = el.input.value;
+  const phpClass = transformTypeScriptToPHP(tsDeclaration);
+  console.log(phpClass);
+}
+
+DOC.create_dto.addEventListener("click", () => {
+  createDTOClass(
+    {
+      input: DOC.typescript,
+    },
+    toggleOutputs
+  );
+});
+DOC.php_dto.addEventListener('click', function() {
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(this);
+  selection.removeAllRanges();
+  selection.addRange(range);
+});

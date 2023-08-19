@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+  <head>
+    <title>TypeScript and PHP Parser</title>
+    <link rel="stylesheet" href="/css/5.3.0.alpha.bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="">
+    <header id="nav" class="navbar sticky-top"></header>
+    <script src="/js/nav.js"></script>
+    <div class="container">
+      <h6>Compare Entities</h6>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="typescriptInput">TypeScript Input:</label>
+            <textarea
+              class="form-control entry"
+              id="typescript"
+              data-parser="typescript"
+              rows="10"
+            >
+            </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row control-bar">
+        <div class="col-md-6">
+          <button
+            id="create-dto"
+            type="button"
+            class="btn btn-primary btn-sm"
+          >Create DTO</button>
+          <button
+            id="expand-output"
+            type="button"
+            class="btn btn-secondary btn-sm"
+          >Expand output</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="phpOutput">PHP Output:</label>
+            <hr />
+            <pre
+              class="form-control compare-output sync-scroll"
+              id="php-dto"
+              style="height: 160px; overflow-y: scroll"
+            ></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/dom-prep.js"></script>
+    <script src="/js/typescript-to-dto.js"></script>
+    <script src="/js/typescript-to-dto-auto-test.js"></script>
+    <a id="example" href="#example">see example</a>
+    <script>
+      document.getElementById("example").addEventListener("click", () => {
+        autoTest(toggleOutputs);
+      });
+      console.log("window.location.hash", window.location.hash);
+      if (window.location.hash === "#example") {
+        autoTest(toggleOutputs);
+      }
+    </script>
+  </body>
+</html>

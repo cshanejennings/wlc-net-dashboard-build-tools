@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark">
+  <head>
+    <title>TypeScript and PHP Parser</title>
+    <link rel="stylesheet" href="/css/5.3.0.alpha.bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="">
+    <header id="nav" class="navbar sticky-top"></header>
+    <script src="/js/nav.js"></script>
+
+    <div class="container">
+      <h6>Compare Entities</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="typescriptInput">TypeScript Input:</label>
+            <textarea
+              class="form-control entry"
+              id="left-input"
+              data-parser="typescript"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="phpInput">PHP Input:</label>
+            <textarea
+              class="form-control entry"
+              id="right-input"
+              data-parser="php_cast"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row control-bar">
+        <div class="col-md-6">
+          <button
+            id="compare-left-and-right"
+            type="button"
+            class="btn btn-primary btn-sm"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 512 512"
+            >
+              <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M320 488c0 9.5-5.6 18.1-14.2 21.9s-18.8 2.3-25.8-4.1l-80-72c-5.1-4.6-7.9-11-7.9-17.8s2.9-13.3 7.9-17.8l80-72c7-6.3 17.2-7.9 25.8-4.1s14.2 12.4 14.2 21.9v40h16c35.3 0 64-28.7 64-64V153.3C371.7 141 352 112.8 352 80c0-44.2 35.8-80 80-80s80 35.8 80 80c0 32.8-19.7 61-48 73.3V320c0 70.7-57.3 128-128 128H320v40zM456 80a24 24 0 1 0 -48 0 24 24 0 1 0 48 0zM192 24c0-9.5 5.6-18.1 14.2-21.9s18.8-2.3 25.8 4.1l80 72c5.1 4.6 7.9 11 7.9 17.8s-2.9 13.3-7.9 17.8l-80 72c-7 6.3-17.2 7.9-25.8 4.1s-14.2-12.4-14.2-21.9V128H176c-35.3 0-64 28.7-64 64V358.7c28.3 12.3 48 40.5 48 73.3c0 44.2-35.8 80-80 80s-80-35.8-80-80c0-32.8 19.7-61 48-73.3V192c0-70.7 57.3-128 128-128h16V24zM56 432a24 24 0 1 0 48 0 24 24 0 1 0 -48 0z"
+              />
+            </svg>
+            Compare
+          </button>
+          <button
+            id="expand-output"
+            type="button"
+            class="btn btn-secondary btn-sm"
+          >
+            Expand output
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="typescriptOutput">TypeScript Output:</label>
+            <hr />
+            <pre
+              class="form-control compare-output sync-scroll"
+              id="left-output"
+              style="height: 160px; overflow-y: scroll"
+            ></pre>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="phpOutput">PHP Output:</label>
+            <hr />
+            <pre
+              class="form-control compare-output sync-scroll"
+              id="right-output"
+              style="height: 160px; overflow-y: scroll"
+            ></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/dom-prep.js"></script>
+    <script src="/js/typescript-to-model.js"></script>
+    <script src="/js/auto-test-models.js"></script>
+    <a id="example" href="#example">see example</a>
+    <script>
+      document.getElementById("example").addEventListener("click", () => {
+        autoTest(toggleOutputs);
+      });
+      console.log("window.location.hash", window.location.hash);
+      if (window.location.hash === "#example") {
+        autoTest(toggleOutputs);
+      }
+    </script>
+  </body>
+</html>
