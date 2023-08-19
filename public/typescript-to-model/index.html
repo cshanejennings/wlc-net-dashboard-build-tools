@@ -156,8 +156,15 @@
     </div>
 
     <script src="/js/dom-prep.js"></script>
-    <script src="/js/script.js"></script>
-    <!-- Comment auto-test.js if not testing -->
-    <!-- <script src="/js/auto-test.js"></script> -->
+    <script src="/js/typescript-to-model.js"></script>
+    <script src="/js/auto-test-models.js"></script>
+    <a id="example" href="#example">see example</a>
+    <script>
+      document.getElementById('example').addEventListener('click', () => {
+        autoTest(toggleOutputs);
+      });
+      // uncomment to auto-fill
+      // autoTest(toggleOutputs);
+    </script>
   </body>
 </html>

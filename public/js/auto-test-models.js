@@ -93,4 +93,3 @@ const autoTest = (toggleOutputs) => {
         right: document.getElementById("right-input"),
     }, toggleOutputs)
 }
-autoTest(toggleOutputs);
