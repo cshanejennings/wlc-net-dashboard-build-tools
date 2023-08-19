@@ -1,0 +1,96 @@
+[data-bs-theme="light"] {
+    --property-value-bg: #eee;
+    --property-value-text: #333;
+    --text-color: #444;
+    --subdued-text-color: #aaa;
+    --missing-right: #933;
+    --separator-color: #ccc;
+    --scrollbar-track-color: #e7e7e7;
+    --scrollbar-thumb-color: #d55959;
+    --scrollbar-border-color: #cacaca;
+  }
+
+  [data-bs-theme="dark"] {
+    --property-value-bg: #333;
+    --property-value-text: #aaa;
+    --text-color: #fff;
+    --subdued-text-color: #666;
+    --missing-right: #faa;
+    --separator-color: #444;
+
+    --scrollbar-track-color: #545454;
+    --scrollbar-thumb-color: #ae4848;
+    --scrollbar-border-color: #757575;
+  }
+  textarea {
+    cursor: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 16px;
+    cursor: pointer;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background-color: var(--scrollbar-track-color);
+    border: 1px solid var(--scrollbar-border-color);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    background-color: var(--scrollbar-thumb-color);
+  }
+
+  pre {
+    height: 160px;
+    overflow-y: scroll;
+    font-size: 12px !important;
+  }
+  .line-number {
+    user-select: none;
+    margin-left: -10px;
+    border-right: 1px solid;
+    color: var(--subdued-text-color);
+    font-family: "Courier New", Courier, monospace;
+  }
+
+  .property-value {
+    font-family: "Courier New", Courier, monospace;
+    width: 200px;
+    text-align: right;
+    padding-left: 5px;
+    padding-right: 5px;
+    float: right;
+    font-size: 11px;
+  }
+  .property-value {
+    background-color: var(--property-value-bg);
+    color: var(--property-value-text);
+  }
+
+  .output-line {
+    border-bottom: 1px dotted var(--separator-color);
+    width: 100%;
+    display: inline-block;
+    padding: 1px 0;
+  }
+  svg {
+    margin-top: -4px;
+  }
+
+  .missing-left {
+    border-color: darkslateblue;
+  }
+  .missing-right {
+    color: var(--missing-right);
+  }
+  .control-bar {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
