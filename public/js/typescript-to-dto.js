@@ -50,6 +50,7 @@ function get_props(str) {
     .split("}")[0]
     .split("\n")
     .map((l) => l.trim())
+    .map(l => l.replace(/^\/\/.*$/, ''))
     .filter((l) => l.length > 0);
   const prop_strings = get_prop_strings(lines);
   const properties = prop_strings.map((str) => {
