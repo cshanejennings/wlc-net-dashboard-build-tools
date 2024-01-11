@@ -1,13 +1,18 @@
 {
   "name": "wlc-net-dashboard-build-tools",
+  "license": "UNLICENSED",
   "version": "1.0.0",
   "description": "development tools for wlc-net application",
   "main": "./src/index.js",
   "author": "Shane Jennings",
   "dependencies": {
     "@types/lodash": "^4.14.194",
+    "dotenv": "^16.3.1",
     "markdown-toc": "^1.2.0",
-    "module-alias": "^2.2.2"
+    "module-alias": "^2.2.2",
+    "mysql": "^2.18.1",
+    "mysqldump": "^3.2.0",
+    "node-gzip": "^1.1.2"
   },
   "devDependencies": {
     "@types/node": "^18.16.1",
@@ -20,6 +25,9 @@
   },
   "scripts": {
     "build": "tsc && copyfiles -u 1 src/template/**/* dist/",
+    "db:backup": "node ./src/dbs/backup.js",
+    "db:restore": "node ./src/dbs/restore.js",
+    "db:check": "node ./src/dbs/check.js",
     "insert-api-snippets": "npm run build && node dist/insert-api-snippets.js",
     "clear-obsidian-client-folder": "rm -rf ../../../client/docs/src/*",
     "build-obsidian-client-folder": "node ./src/map/create-obsidian-folder.js",
